@@ -29,7 +29,7 @@ An elite, high-performance HTML5 Christmas experience built with crystalline pre
 
 - **IDE**: [TRAE.AI](https://trae.ai)
 - **AI Models**: 
-  - [GLM 4.7](https://z.ai/subscribe?ic=R0K78RJKNW) (Affiliate Link)
+  - [GLM 4.7](https://z.ai/subscribe?ic=R0K78RJKNW) (10% Invite Code Discount)
   - Google Gemini 3 Flash
 - **Frontend**: Pure HTML5, CSS3 (Advanced Grid/Flex), Vanilla JavaScript (ES6+).
 - **Graphics**: 2D Canvas API with 3D geometry simulation.
