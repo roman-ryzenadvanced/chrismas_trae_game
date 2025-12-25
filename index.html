@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRAE Aurora | Crystalline Christmas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Canvas for Aurora/Snow -->
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="glass-nav">
+            <div class="logo">TRAE <span>AURORA</span></div>
+            <ul class="nav-links">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#forge">Forge</a></li>
+                <li><a href="#game">Game</a></li>
+            </ul>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="hero" class="hero">
+            <div class="hero-content">
+                <h1 class="glitch-text" data-text="TRAE CHRISTMAS">TRAE CHRISTMAS</h1>
+                <p class="subtitle">Elevating the holiday spirit through crystalline logic.</p>
+                
+                <div id="countdown" class="countdown-container">
+                    <div class="time-block">
+                        <span id="days">00</span>
+                        <label>Days</label>
+                    </div>
+                    <div class="time-block">
+                        <span id="hours">00</span>
+                        <label>Hours</label>
+                    </div>
+                    <div class="time-block">
+                        <span id="minutes">00</span>
+                        <label>Mins</label>
+                    </div>
+                    <div class="time-block">
+                        <span id="seconds">00</span>
+                        <label>Secs</label>
+                    </div>
+                </div>
+
+                <div class="hero-buttons">
+                    <button onclick="scrollToSection('forge')" class="btn-primary">Forge a Message</button>
+                    <button onclick="scrollToSection('game')" class="btn-secondary">Play Game</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Message Forge Section -->
+        <section id="forge" class="forge-section">
+            <div class="section-card glass">
+                <h2>Magical Message Forge</h2>
+                <p>Cast your festive wishes into the crystalline grid.</p>
+                <div class="forge-input-group">
+                    <input type="text" id="messageInput" placeholder="Type your festive message..." maxlength="50">
+                    <button id="forgeBtn" class="btn-primary">Crystalize</button>
+                </div>
+                <div id="crystalDisplay" class="crystal-display">
+                    <p id="outputMessage"></p>
+                    <canvas id="snowflakeCanvas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Game Section -->
+        <section id="game" class="game-section">
+            <div class="section-card glass">
+                <h2>Gift Catcher</h2>
+                <p>Catch the falling TRAE gifts to power the Aurora.</p>
+                <div class="game-container" id="gameContainer">
+                    <div id="gameUI">
+                        <div class="score">Score: <span id="scoreVal">0</span></div>
+                        <button id="startGameBtn" class="btn-primary">Start Mission</button>
+                    </div>
+                    <canvas id="gameCanvas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <footer class="glass-footer">
+            <p>MADE BY <a href="https://github.com/roman-ryzenadvanced/Custom-Engineered-Agents-and-Tools-for-Vibe-Coders" target="_blank" class="author-link">Roman | RyzenAdvanced</a> using <span>TRAE.AI</span>, <a href="https://z.ai/subscribe?ic=R0K78RJKNW" target="_blank" class="glm-link">GLM 4.7</a> & <span class="gemini-link">Gemini 3 Flash</span></p>
+            <p class="copyright">&copy; 2025 Coded with Crystalline Precision.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
