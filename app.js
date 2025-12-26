@@ -264,6 +264,20 @@ function initGame() {
         return code;
     };
     
+    window.generatePin = (codeInputId, hintId) => {
+        const codeInput = document.getElementById(codeInputId);
+        const newPin = generateSecretCode();
+        codeInput.value = newPin;
+        codeInput.style.background = 'rgba(0, 255, 100, 0.2)';
+        setTimeout(() => {
+            codeInput.style.background = '';
+        }, 1000);
+        const hintEl = document.getElementById(hintId);
+        if (hintEl) {
+            hintEl.innerHTML = `<span style="color: var(--trae-green); font-weight: bold;">PIN Generated: ${newPin}</span>`;
+        }
+    };
+    
     window.submitScore = (gameType, score, nameInputId, codeInputId, hintId) => {
         const nameInput = document.getElementById(nameInputId);
         const codeInput = document.getElementById(codeInputId);
@@ -438,6 +452,10 @@ function initGame() {
         overlay.classList.remove('hidden');
         document.getElementById('overlayTitle').innerText = `GAME OVER - SCORE: ${score}`;
     };
+
+    document.getElementById('generatePinBtn')?.addEventListener('click', () => {
+        generatePin('playerSecretCode', 'codeHint');
+    });
 
     submitBtn.addEventListener('click', () => {
         if (submitScore('gift', score, 'playerName', 'playerSecretCode', 'codeHint')) {
@@ -1324,11 +1342,19 @@ function initTraoom() {
         mouse.y = touch.clientY - rect.top;
     }, { passive: false });
 
+    document.getElementById('generateTraoomPinBtn')?.addEventListener('click', () => {
+        generatePin('traoomSecretCode', 'traoomCodeHint');
+    });
+
     document.getElementById('submitTraoomBtn').addEventListener('click', () => {
         if (submitScore('traoom', kills, 'traoomPlayerName', 'traoomSecretCode', 'traoomCodeHint')) {
             overlay.classList.add('hidden');
             startBtn.style.display = 'block';
         }
+    });
+
+    document.getElementById('generatePuzzlePinBtn')?.addEventListener('click', () => {
+        generatePin('puzzleSecretCode', 'puzzleCodeHint');
     });
 
     startBtn.addEventListener('click', startGame);
@@ -1716,6 +1742,10 @@ function initRhythmBeat() {
         }
     });
 
+    document.getElementById('generateRhythmPinBtn')?.addEventListener('click', () => {
+        generatePin('rhythmSecretCode', 'rhythmCodeHint');
+    });
+
     document.getElementById('submitRhythmBtn').addEventListener('click', () => {
         if (submitScore('rhythm', score, 'rhythmPlayerName', 'rhythmSecretCode', 'rhythmCodeHint')) {
             overlay.classList.add('hidden');
@@ -1998,6 +2028,10 @@ function initCosmicArena() {
         });
     });
 
+    document.getElementById('generateArenaPinBtn')?.addEventListener('click', () => {
+        generatePin('arenaSecretCode', 'arenaCodeHint');
+    });
+
     document.getElementById('submitArenaBtn').addEventListener('click', () => {
         if (submitScore('arena', kills, 'arenaPlayerName', 'arenaSecretCode', 'arenaCodeHint')) {
             overlay.classList.add('hidden');
@@ -2256,6 +2290,10 @@ function initTetris() {
         draw();
     });
 
+    document.getElementById('generateTetrisPinBtn')?.addEventListener('click', () => {
+        generatePin('tetrisSecretCode', 'tetrisCodeHint');
+    });
+
     startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', startGame);
 
@@ -2502,6 +2540,10 @@ function initPlatformer() {
 
     window.addEventListener('keydown', (e) => keys[e.code] = true);
     window.addEventListener('keyup', (e) => keys[e.code] = false);
+
+    document.getElementById('generatePlatformerPinBtn')?.addEventListener('click', () => {
+        generatePin('platformerSecretCode', 'platformerCodeHint');
+    });
 
     document.getElementById('submitPlatformerBtn').addEventListener('click', () => {
         if (submitScore('platformer', collected * 10 + Math.max(0, 100 - parseInt(formatTime(gameTime).replace(':', ''))), 'platformerPlayerName', 'platformerSecretCode', 'platformerCodeHint')) {
