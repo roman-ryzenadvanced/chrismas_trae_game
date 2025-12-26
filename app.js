@@ -284,13 +284,15 @@ function initGame() {
         const name = nameInput.value.trim() || 'Anonymous';
         let secretCode = codeInput.value.trim().toUpperCase();
         
-        if (secretCode && playersData[name] && playersData[name].code === secretCode) {
-            secretCode = playersData[name].code;
-        } else if (!secretCode) {
-            secretCode = generateSecretCode();
-        } else {
+        if (!playersData[name]) {
+            if (!secretCode) {
+                secretCode = generateSecretCode();
+            }
+        } else if (secretCode && playersData[name].code !== secretCode) {
             alert('PIN not found for this name. Leave blank for new PIN.');
             return false;
+        } else {
+            secretCode = playersData[name].code;
         }
         
         if (!playersData[name]) {
@@ -301,7 +303,6 @@ function initGame() {
                 lastPlayed: new Date().toISOString()
             };
         } else {
-            playersData[name].code = secretCode;
             playersData[name].lastPlayed = new Date().toISOString();
         }
         
