@@ -253,26 +253,160 @@ function initGame() {
         });
     });
 
+    const playersData = JSON.parse(localStorage.getItem('trae_players') || '{}');
+    
+    const generateSecretCode = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = '';
+        for (let i = 0; i < 6; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+    };
+    
+    window.submitScore = (gameType, score, nameInputId, codeInputId, hintId) => {
+        const nameInput = document.getElementById(nameInputId);
+        const codeInput = document.getElementById(codeInputId);
+        const name = nameInput.value.trim() || 'Anonymous';
+        let secretCode = codeInput.value.trim().toUpperCase();
+        
+        if (secretCode && playersData[name] && playersData[name].code === secretCode) {
+            secretCode = playersData[name].code;
+        } else if (!secretCode) {
+            secretCode = generateSecretCode();
+        } else {
+            alert('PIN not found for this name. Leave blank for new PIN.');
+            return false;
+        }
+        
+        if (!playersData[name]) {
+            playersData[name] = {
+                name: name,
+                code: secretCode,
+                games: {},
+                lastPlayed: new Date().toISOString()
+            };
+        } else {
+            playersData[name].code = secretCode;
+            playersData[name].lastPlayed = new Date().toISOString();
+        }
+        
+        if (!playersData[name].games[gameType] || playersData[name].games[gameType].score < score) {
+            playersData[name].games[gameType] = {
+                score: score,
+                date: new Date().toISOString()
+            };
+        }
+        
+        localStorage.setItem('trae_players', JSON.stringify(playersData));
+        document.getElementById(hintId).innerText = `Your PIN: ${secretCode}`;
+        nameInput.value = '';
+        codeInput.value = '';
+        updateLeaderboardUI();
+        return true;
+    };
+
+    window.copySecretCode = (code) => {
+        navigator.clipboard.writeText(code).then(() => {
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = 'Copied!';
+            btn.style.background = 'var(--trae-green)';
+            setTimeout(() => {
+                btn.innerText = code;
+                btn.style.background = '';
+            }, 1500);
+        });
+    };
+
     // Leaderboard logic
-    let leaderboard = JSON.parse(localStorage.getItem('trae_leaderboard') || '[]');
+    let currentTab = 'total';
     
     const updateLeaderboardUI = () => {
         leaderboardList.innerHTML = '';
-        leaderboard.sort((a, b) => b.score - a.score).slice(0, 10).forEach((entry, idx) => {
+        let displayData = [];
+        
+        if (currentTab === 'total') {
+            Object.values(playersData).forEach(player => {
+                const totalScore = Object.values(player.games).reduce((sum, val) => sum + val.score, 0);
+                displayData.push({
+                    name: player.name,
+                    code: player.code,
+                    totalScore,
+                    game: 'Total',
+                    score: totalScore,
+                    date: player.lastPlayed
+                });
+            });
+            displayData.sort((a, b) => b.totalScore - a.totalScore);
+        } else {
+            Object.values(playersData).forEach(player => {
+                if (player.games[currentTab]) {
+                    displayData.push({
+                        name: player.name,
+                        code: player.code,
+                        game: currentTab,
+                        score: player.games[currentTab].score,
+                        date: player.games[currentTab].date
+                    });
+                }
+            });
+            displayData.sort((a, b) => b.score - a.score);
+        }
+        
+        displayData.slice(0, 50).forEach((entry, idx) => {
             const dateStr = new Date(entry.date).toLocaleDateString();
-            const durationStr = entry.duration ? `${entry.duration}s` : 'N/A';
             const div = document.createElement('div');
             div.className = 'leader-item';
-            div.innerHTML = `
-                <span class="leader-rank">#${idx + 1}</span>
-                <span class="leader-name">${entry.name}</span>
-                <span class="leader-score">${entry.score}</span>
-                <span class="leader-duration">${durationStr}</span>
-                <span class="leader-date">${dateStr}</span>
-            `;
+            
+            if (currentTab === 'total') {
+                div.innerHTML = `
+                    <span class="leader-rank">#${idx + 1}</span>
+                    <span class="leader-name">${entry.name}</span>
+                    <span class="leader-game">${entry.game}</span>
+                    <span class="leader-score">${entry.totalScore}</span>
+                    <span class="leader-date">${dateStr}</span>
+                `;
+            } else {
+                const gameLabels = {
+                    gift: 'Gift Catcher',
+                    traoom: 'Traoom',
+                    neonpuzzle: 'Neon Puzzle',
+                    rhythm: 'Rhythm Beat',
+                    arena: 'Cosmic Arena',
+                    tetris: 'Crystal Tetris',
+                    platformer: 'Aurora Jumper'
+                };
+                div.innerHTML = `
+                    <span class="leader-rank">#${idx + 1}</span>
+                    <span class="leader-name">${entry.name}</span>
+                    <span class="leader-game">${gameLabels[currentTab]}</span>
+                    <span class="leader-score">${entry.score}</span>
+                    <span class="leader-code" onclick="copySecretCode('${entry.code}')">${entry.code}</span>
+                    <span class="leader-date">${dateStr}</span>
+                `;
+            }
             leaderboardList.appendChild(div);
         });
+        
+        if (displayData.length === 0) {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.className = 'leader-item';
+            emptyMsg.style.justifyContent = 'center';
+            emptyMsg.innerHTML = `<span style="color: #888;">No scores yet for ${currentTab === 'total' ? 'Total' : currentTab}!</span>`;
+            leaderboardList.appendChild(emptyMsg);
+        }
     };
+    
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTab = btn.dataset.tab;
+            updateLeaderboardUI();
+        });
+    });
 
     const startTimer = () => {
         timeLeft = selectedDuration;
@@ -306,13 +440,11 @@ function initGame() {
     };
 
     submitBtn.addEventListener('click', () => {
-        const name = nameInput.value.trim() || 'Anonymous';
-        leaderboard.push({ name, score, date: new Date().toISOString(), duration: selectedDuration });
-        localStorage.setItem('trae_leaderboard', JSON.stringify(leaderboard));
-        updateLeaderboardUI();
-        overlay.classList.add('hidden');
-        startBtn.style.display = 'block';
-        document.body.style.overflow = '';
+        if (submitScore('gift', score, 'playerName', 'playerSecretCode', 'codeHint')) {
+            overlay.classList.add('hidden');
+            startBtn.style.display = 'block';
+            document.body.style.overflow = '';
+        }
     });
 
     const resize = () => {
@@ -737,8 +869,7 @@ function initGame() {
 
 // Export/Import Leaderboard
 window.exportLeaderboard = () => {
-    const leaderboard = JSON.parse(localStorage.getItem('trae_leaderboard') || '[]');
-    const dataStr = JSON.stringify(leaderboard, null, 2);
+    const dataStr = JSON.stringify(playersData, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -756,9 +887,13 @@ window.importLeaderboard = (event) => {
     reader.onload = (e) => {
         try {
             const data = JSON.parse(e.target.result);
-            if (Array.isArray(data)) {
-                localStorage.setItem('trae_leaderboard', JSON.stringify(data));
-                location.reload();
+            if (typeof data === 'object' && data !== null) {
+                Object.keys(data).forEach(name => {
+                    playersData[name] = data[name];
+                });
+                localStorage.setItem('trae_players', JSON.stringify(playersData));
+                updateLeaderboardUI();
+                alert(`Imported ${Object.keys(data).length} player(s)!`);
             }
         } catch (err) {
             alert('Invalid file format');
@@ -1189,6 +1324,13 @@ function initTraoom() {
         mouse.y = touch.clientY - rect.top;
     }, { passive: false });
 
+    document.getElementById('submitTraoomBtn').addEventListener('click', () => {
+        if (submitScore('traoom', kills, 'traoomPlayerName', 'traoomSecretCode', 'traoomCodeHint')) {
+            overlay.classList.add('hidden');
+            startBtn.style.display = 'block';
+        }
+    });
+
     startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', startGame);
 
@@ -1574,6 +1716,13 @@ function initRhythmBeat() {
         }
     });
 
+    document.getElementById('submitRhythmBtn').addEventListener('click', () => {
+        if (submitScore('rhythm', score, 'rhythmPlayerName', 'rhythmSecretCode', 'rhythmCodeHint')) {
+            overlay.classList.add('hidden');
+            startBtn.style.display = 'block';
+        }
+    });
+
     startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', startGame);
 
@@ -1847,6 +1996,13 @@ function initCosmicArena() {
             vx: (dx / dist) * 10,
             vy: (dy / dist) * 10
         });
+    });
+
+    document.getElementById('submitArenaBtn').addEventListener('click', () => {
+        if (submitScore('arena', kills, 'arenaPlayerName', 'arenaSecretCode', 'arenaCodeHint')) {
+            overlay.classList.add('hidden');
+            startBtn.style.display = 'block';
+        }
     });
 
     startBtn.addEventListener('click', startGame);
@@ -2346,6 +2502,13 @@ function initPlatformer() {
 
     window.addEventListener('keydown', (e) => keys[e.code] = true);
     window.addEventListener('keyup', (e) => keys[e.code] = false);
+
+    document.getElementById('submitPlatformerBtn').addEventListener('click', () => {
+        if (submitScore('platformer', collected * 10 + Math.max(0, 100 - parseInt(formatTime(gameTime).replace(':', ''))), 'platformerPlayerName', 'platformerSecretCode', 'platformerCodeHint')) {
+            overlay.classList.add('hidden');
+            startBtn.style.display = 'block';
+        }
+    });
 
     startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', startGame);

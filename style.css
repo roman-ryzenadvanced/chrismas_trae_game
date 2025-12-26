@@ -1032,6 +1032,17 @@ body {
     font-style: italic;
 }
 
+.pin-explainer {
+    color: var(--aurora-cyan);
+    font-size: 0.75rem;
+    text-align: center;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
 .export-buttons {
     display: flex;
     gap: 15px;
