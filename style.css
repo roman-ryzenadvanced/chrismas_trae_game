@@ -38,6 +38,116 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        padding: 0 5px;
+        max-width: 100%;
+        min-height: 100vh;
+    }
+    
+    .glass-nav {
+        padding: 10px 15px;
+        margin-top: 5px;
+        border-radius: 20px;
+    }
+    
+    .logo {
+        font-size: 1.2rem;
+    }
+    
+    .nav-links {
+        gap: 12px;
+    }
+    
+    .nav-links a {
+        font-size: 0.85rem;
+    }
+    
+    .game-container {
+        height: 60vh;
+        min-height: 400px;
+        margin-top: 20px;
+        border-radius: 15px;
+    }
+    
+    .game-timer {
+        width: 60px;
+        height: 60px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    #timerDisplay {
+        font-size: 1.2rem;
+    }
+    
+    .time-btn {
+        padding: 6px 15px;
+        font-size: 0.8rem;
+    }
+    
+    .time-selector {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .selector-label {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    
+    .selector-label {
+        font-size: 0.8rem;
+    }
+    
+    .leader-item {
+        font-size: 0.85rem;
+        padding: 8px 10px;
+    }
+    
+    .leader-date, .leader-duration {
+        font-size: 0.7rem;
+    }
+    
+    .section-card {
+        margin: 50px 0;
+        padding: 30px 15px;
+    }
+    
+    .section-card h2 {
+        font-size: 1.8rem;
+    }
+    
+    .forge-input-group {
+        flex-direction: column;
+        padding: 0 10px;
+    }
+    
+    .forge-input-group input {
+        width: 100%;
+    }
+    
+    .message-cloud {
+        max-height: 200px;
+        padding: 20px;
+    }
+    
+    .cloud-msg {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+    
+    .game-container {
+        min-height: 400px;
+    }
+    
+    .export-buttons {
+        flex-direction: column;
+    }
 }
 
 /* Glassmorphism Utility */
@@ -182,6 +292,8 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
+    padding: 80px 20px 20px;
+    min-height: 600px;
 }
 
 .glitch-text {
@@ -258,6 +370,260 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-dim);
+}
+
+/* iPhone-style App Icons */
+.app-icons {
+    display: flex;
+    gap: 25px;
+    margin: 40px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.app-icon:hover {
+    transform: scale(1.1);
+}
+
+.app-icon:hover .app-icon-inner {
+    box-shadow: 0 20px 40px rgba(0, 242, 255, 0.3),
+                inset 0 0 30px rgba(0, 242, 255, 0.2);
+}
+
+.app-icon-inner {
+    width: 80px;
+    height: 80px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.gift-icon {
+    background: linear-gradient(135deg, #00ff66, #00cc44);
+}
+
+.traoom-icon {
+    background: linear-gradient(135deg, #7000ff, #4a00e0);
+}
+
+.forge-icon {
+    background: linear-gradient(135deg, #00f2ff, #0099cc);
+}
+
+.app-icon-emoji {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Neon Puzzle Game Styles */
+.neonpuzzle-icon {
+    background: linear-gradient(135deg, #ff0066, #ff6600);
+}
+
+.neonpuzzle-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 40px;
+    max-width: 100%;
+    border: 2px solid #ff0066;
+}
+
+#neonpuzzleCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+.neonpuzzle-stats {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+}
+
+.neonpuzzle-stat {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-family: var(--font-accent);
+    font-size: 1rem;
+    color: #ff6600;
+}
+
+.neonpuzzle-stat span {
+    color: #ff0066;
+    font-weight: bold;
+}
+
+/* Rhythm Beat Game Styles */
+.rhythm-icon {
+    background: linear-gradient(135deg, #ffcc00, #ff9900);
+}
+
+.rhythm-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 40px;
+    max-width: 100%;
+    border: 2px solid #ffcc00;
+}
+
+#rhythmCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+.rhythm-stats {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+}
+
+.rhythm-stat {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-family: var(--font-accent);
+    font-size: 1rem;
+    color: #ff9900;
+}
+
+.rhythm-stat span {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+/* Cosmic Arena Game Styles */
+.arena-icon {
+    background: linear-gradient(135deg, #00ffcc, #0066ff);
+}
+
+.tetris-icon {
+    background: linear-gradient(135deg, #ff00ff, #ff0066);
+}
+
+.platformer-icon {
+    background: linear-gradient(135deg, #00ff00, #00cc00);
+}
+
+.arena-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 40px;
+    max-width: 100%;
+    border: 2px solid #00ffcc;
+}
+
+#arenaCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+.arena-stats {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+}
+
+.arena-stat {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-family: var(--font-accent);
+    font-size: 1rem;
+    color: #0066ff;
+}
+
+.arena-stat span {
+    color: #00ffcc;
+    font-weight: bold;
+}
+
+/* Tetris Game Styles */
+.tetris-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 40px;
+    max-width: 100%;
+    border: 2px solid #ff00ff;
+}
+
+#tetrisCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+/* Platformer Game Styles */
+.platformer-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 40px;
+    max-width: 100%;
+    border: 2px solid #00ff00;
+}
+
+#platformerCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+.app-label {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
 /* Buttons */
@@ -350,11 +716,46 @@ body {
     border-radius: 20px;
     overflow: hidden;
     margin-top: 40px;
+    max-width: 100%;
 }
 
 #gameCanvas {
     width: 100%;
     height: 100%;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    display: block;
+}
+
+.game-timer {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 0 30px rgba(0, 255, 102, 0.3);
+    animation: pulse 1s infinite;
+}
+
+#timerDisplay {
+    font-family: var(--font-accent);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--trae-green);
+}
+
+#timerDisplay.warning {
+    color: #ff3366;
+    animation: pulse 0.5s infinite;
 }
 
 #gameUI {
@@ -372,6 +773,177 @@ body {
     margin-bottom: 20px;
 }
 
+/* Message Cloud */
+.message-cloud {
+    margin-top: 40px;
+    padding: 30px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.message-cloud h3 {
+    font-family: var(--font-accent);
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: var(--trae-green);
+}
+
+#cloudContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.cloud-msg {
+    background: rgba(0, 255, 102, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    animation: fadeIn 0.5s ease;
+    border: 1px solid rgba(0, 255, 102, 0.2);
+}
+
+/* Game Over Overlay */
+.game-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(5, 11, 20, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    border: 2px solid var(--trae-green);
+    z-index: 100;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.game-overlay.hidden {
+    display: none;
+}
+
+.game-overlay h3 {
+    font-family: var(--font-accent);
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #ff3366;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    padding: 12px 20px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+}
+
+.time-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.selector-label {
+    font-family: var(--font-accent);
+    font-size: 0.9rem;
+    color: var(--trae-green);
+}
+
+.time-btn {
+    background: rgba(0, 255, 102, 0.1);
+    border: 1px solid var(--trae-green);
+    color: var(--trae-green);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-family: var(--font-accent);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-btn:hover {
+    background: rgba(0, 255, 102, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+}
+
+.time-btn.active {
+    background: var(--trae-green);
+    color: black;
+    box-shadow: 0 0 20px rgba(0, 255, 102, 0.5);
+}
+
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.export-btn {
+    background: rgba(0, 242, 255, 0.1);
+    border: 1px solid var(--aurora-cyan);
+    color: var(--aurora-cyan);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: var(--font-accent);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+    background: rgba(0, 242, 255, 0.2);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+}
+
+/* Leaderboard */
+.leaderboard {
+    margin-top: 40px;
+    padding: 30px;
+    text-align: left;
+}
+
+.leaderboard h3 {
+    font-family: var(--font-accent);
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--aurora-cyan);
+}
+
+.leader-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--glass-border);
+    font-family: var(--font-accent);
+}
+
+.leader-item:last-child {
+    border: none;
+}
+
+.leader-rank { color: var(--trae-green); }
+.leader-name { flex: 1; margin-left: 20px; }
+.leader-score { color: var(--aurora-cyan); }
+.leader-duration { color: #ff9900; font-size: 0.85rem; margin-left: 10px; }
+.leader-date { color: #888; font-size: 0.8rem; margin-left: 10px; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Footer Links */
 footer {
     text-align: center;
     padding: 60px 40px;
@@ -404,9 +976,87 @@ footer span, .glm-link, .author-link, .gemini-link {
     font-family: var(--font-main);
 }
 
+/* Traoom Game Styles */
+.traoom-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 40px;
+    max-width: 100%;
+    border: 2px solid var(--aurora-purple);
+}
+
+#traoomCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+.traoom-stats {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+}
+
+.traoom-stat {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-family: var(--font-accent);
+    font-size: 1rem;
+    color: var(--aurora-cyan);
+}
+
+.traoom-stat span {
+    color: var(--trae-green);
+    font-weight: bold;
+}
+
+.traoom-controls {
+    margin-top: 20px;
+    padding: 15px;
+    background: var(--glass-bg);
+    border-radius: 15px;
+    border: 1px solid var(--glass-border);
+}
+
+.traoom-controls p {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
 @media (max-width: 768px) {
     .glitch-text { font-size: 3rem; }
     .countdown-container { flex-wrap: wrap; justify-content: center; }
     .forge-input-group { flex-direction: column; }
     .btn-secondary { margin-left: 0; margin-top: 15px; }
+    
+    .traoom-container {
+        height: 60vh;
+        min-height: 400px;
+    }
+    
+    .traoom-stats {
+        flex-direction: column;
+        gap: 8px;
+        left: 10px;
+        top: 10px;
+    }
+    
+    .traoom-stat {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .traoom-controls p {
+        font-size: 0.8rem;
+    }
 }
