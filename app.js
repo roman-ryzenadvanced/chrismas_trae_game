@@ -221,8 +221,7 @@ function initGame() {
     const startBtn = document.getElementById('startGameBtn');
     const scoreEl = document.getElementById('scoreVal');
     const overlay = document.getElementById('gameOverlay');
-    const submitBtn = document.getElementById('submitScoreBtn');
-    const nameInput = document.getElementById('playerName');
+    const submitBtn = document.getElementById('saveScoreBtn');
     const leaderboardList = document.getElementById('leaderboardList');
     const timerDisplay = document.getElementById('timerDisplay');
     const timeBtns = document.querySelectorAll('.time-btn');
@@ -254,7 +253,8 @@ function initGame() {
     });
 
     const playersData = JSON.parse(localStorage.getItem('trae_players') || '{}');
-    
+    let currentUser = null;
+
     const generateSecretCode = () => {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         let code = '';
@@ -263,62 +263,82 @@ function initGame() {
         }
         return code;
     };
-    
-    window.generatePin = (codeInputId, hintId) => {
-        const codeInput = document.getElementById(codeInputId);
-        const newPin = generateSecretCode();
-        codeInput.value = newPin;
-        codeInput.style.background = 'rgba(0, 255, 100, 0.2)';
-        setTimeout(() => {
-            codeInput.style.background = '';
-        }, 1000);
-        const hintEl = document.getElementById(hintId);
-        if (hintEl) {
-            hintEl.innerHTML = `<span style="color: var(--trae-green); font-weight: bold;">PIN Generated: ${newPin}</span>`;
+
+    window.registerPlayer = () => {
+        const username = document.getElementById('regUsername').value.trim() || 'Anonymous';
+        const pin = generateSecretCode();
+
+        if (playersData[username]) {
+            document.getElementById('regStatus').innerHTML = `<span style="color: #ff4444;">Username already exists! Your PIN: ${playersData[username].code}</span>`;
+            return;
         }
+
+        playersData[username] = {
+            name: username,
+            code: pin,
+            games: {},
+            lastPlayed: new Date().toISOString()
+        };
+
+        localStorage.setItem('trae_players', JSON.stringify(playersData));
+        currentUser = username;
+
+        document.getElementById('regUsername').value = '';
+        document.getElementById('regStatus').innerHTML = '';
+        document.getElementById('regStatus').parentElement.querySelector('.input-group').style.display = 'none';
+        document.getElementById('currentUserInfo').style.display = 'block';
+        document.getElementById('currentUserDisplay').innerText = username;
+        document.getElementById('currentUserPin').innerText = pin;
+
+        updateLeaderboardUI();
     };
-    
-    window.submitScore = (gameType, score, nameInputId, codeInputId, hintId) => {
-        const nameInput = document.getElementById(nameInputId);
-        const codeInput = document.getElementById(codeInputId);
-        const name = nameInput.value.trim() || 'Anonymous';
-        let secretCode = codeInput.value.trim().toUpperCase();
-        
-        if (!playersData[name]) {
-            if (!secretCode) {
-                secretCode = generateSecretCode();
-            }
-        } else if (secretCode && playersData[name].code !== secretCode) {
-            alert('PIN not found for this name. Leave blank for new PIN.');
-            return false;
-        } else {
-            secretCode = playersData[name].code;
+
+    window.logoutUser = () => {
+        currentUser = null;
+        document.getElementById('currentUserInfo').style.display = 'none';
+        document.getElementById('regUsername').value = '';
+        document.getElementById('regStatus').innerHTML = '';
+        document.getElementById('regStatus').parentElement.querySelector('.input-group').style.display = 'flex';
+
+        updateAllLoginPrompts();
+    };
+
+    window.submitScore = (gameType, score) => {
+        if (!currentUser) {
+            alert('Please register first to save scores');
+            return;
         }
-        
-        if (!playersData[name]) {
-            playersData[name] = {
-                name: name,
-                code: secretCode,
-                games: {},
-                lastPlayed: new Date().toISOString()
-            };
-        } else {
-            playersData[name].lastPlayed = new Date().toISOString();
-        }
-        
-        if (!playersData[name].games[gameType] || playersData[name].games[gameType].score < score) {
-            playersData[name].games[gameType] = {
+
+        const player = playersData[currentUser];
+        if (!player.games[gameType] || player.games[gameType].score < score) {
+            player.games[gameType] = {
                 score: score,
                 date: new Date().toISOString()
             };
+            player.lastPlayed = new Date().toISOString();
+            localStorage.setItem('trae_players', JSON.stringify(playersData));
+            updateLeaderboardUI();
+            alert(`Score saved! ${currentUser}: ${score} in ${gameType}`);
+        } else {
+            alert(`Score not saved. Your best for ${gameType} is ${player.games[gameType].score}`);
         }
-        
-        localStorage.setItem('trae_players', JSON.stringify(playersData));
-        document.getElementById(hintId).innerText = `Your PIN: ${secretCode}`;
-        nameInput.value = '';
-        codeInput.value = '';
-        updateLeaderboardUI();
-        return true;
+    };
+
+    const updateAllLoginPrompts = () => {
+        const prompts = document.querySelectorAll('[id$="LoginPrompt"]');
+        prompts.forEach(p => {
+            p.style.display = currentUser ? 'none' : 'block';
+        });
+    };
+
+    const updateAllOverlays = () => {
+        if (currentUser) {
+            document.getElementById('currentUserDisplay').innerText = currentUser;
+            document.getElementById('currentUserPin').innerText = playersData[currentUser].code;
+            document.getElementById('currentUserInfo').style.display = 'block';
+            document.getElementById('regStatus').parentElement.querySelector('.input-group').style.display = 'none';
+        }
+        updateAllLoginPrompts();
     };
 
     window.copySecretCode = (code) => {
@@ -336,11 +356,11 @@ function initGame() {
 
     // Leaderboard logic
     let currentTab = 'total';
-    
+
     const updateLeaderboardUI = () => {
         leaderboardList.innerHTML = '';
         let displayData = [];
-        
+
         if (currentTab === 'total') {
             Object.values(playersData).forEach(player => {
                 const totalScore = Object.values(player.games).reduce((sum, val) => sum + val.score, 0);
@@ -368,12 +388,12 @@ function initGame() {
             });
             displayData.sort((a, b) => b.score - a.score);
         }
-        
+
         displayData.slice(0, 50).forEach((entry, idx) => {
             const dateStr = new Date(entry.date).toLocaleDateString();
             const div = document.createElement('div');
             div.className = 'leader-item';
-            
+
             if (currentTab === 'total') {
                 div.innerHTML = `
                     <span class="leader-rank">#${idx + 1}</span>
@@ -403,7 +423,7 @@ function initGame() {
             }
             leaderboardList.appendChild(div);
         });
-        
+
         if (displayData.length === 0) {
             const emptyMsg = document.createElement('div');
             emptyMsg.className = 'leader-item';
@@ -412,7 +432,7 @@ function initGame() {
             leaderboardList.appendChild(emptyMsg);
         }
     };
-    
+
     const tabButtons = document.querySelectorAll('.tab-btn');
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -422,6 +442,11 @@ function initGame() {
             updateLeaderboardUI();
         });
     });
+
+    document.getElementById('registerBtn')?.addEventListener('click', registerPlayer);
+
+    updateAllOverlays();
+    updateLeaderboardUI();
 
     const startTimer = () => {
         timeLeft = selectedDuration;
@@ -450,20 +475,21 @@ function initGame() {
         gameActive = false;
         if (timerInterval) clearInterval(timerInterval);
         document.body.style.overflow = '';
+        document.getElementById('overlayTitle').innerText = 'GAME OVER';
+        document.getElementById('gameFinalScore').innerText = score;
         overlay.classList.remove('hidden');
-        document.getElementById('overlayTitle').innerText = `GAME OVER - SCORE: ${score}`;
     };
 
-    document.getElementById('generatePinBtn')?.addEventListener('click', () => {
-        generatePin('playerSecretCode', 'codeHint');
+    submitBtn.addEventListener('click', () => {
+        submitScore('gift', score);
+        overlay.classList.add('hidden');
+        startBtn.style.display = 'block';
+        document.body.style.overflow = '';
     });
 
-    submitBtn.addEventListener('click', () => {
-        if (submitScore('gift', score, 'playerName', 'playerSecretCode', 'codeHint')) {
-            overlay.classList.add('hidden');
-            startBtn.style.display = 'block';
-            document.body.style.overflow = '';
-        }
+    document.getElementById('playAgainBtn').addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        startBtn.click();
     });
 
     const resize = () => {
@@ -926,7 +952,6 @@ function initTraoom() {
     const canvas = document.getElementById('traoomCanvas');
     const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startTraoomBtn');
-    const restartBtn = document.getElementById('restartTraoomBtn');
     const killEl = document.getElementById('killVal');
     const timeEl = document.getElementById('traoomTime');
     const waveEl = document.getElementById('waveVal');
@@ -1343,23 +1368,29 @@ function initTraoom() {
         mouse.y = touch.clientY - rect.top;
     }, { passive: false });
 
-    document.getElementById('generateTraoomPinBtn')?.addEventListener('click', () => {
-        generatePin('traoomSecretCode', 'traoomCodeHint');
+    document.getElementById('saveTraoomScoreBtn').addEventListener('click', () => {
+        submitScore('traoom', kills);
+        overlay.classList.add('hidden');
+        startBtn.style.display = 'block';
     });
 
-    document.getElementById('submitTraoomBtn').addEventListener('click', () => {
-        if (submitScore('traoom', kills, 'traoomPlayerName', 'traoomSecretCode', 'traoomCodeHint')) {
-            overlay.classList.add('hidden');
-            startBtn.style.display = 'block';
-        }
+    document.getElementById('playTraoomAgainBtn').addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        startBtn.click();
     });
 
-    document.getElementById('generatePuzzlePinBtn')?.addEventListener('click', () => {
-        generatePin('puzzleSecretCode', 'puzzleCodeHint');
+    document.getElementById('savePuzzleScoreBtn').addEventListener('click', () => {
+        submitScore('neonpuzzle', moves);
+        overlay.classList.add('hidden');
+        startBtn.style.display = 'block';
+    });
+
+    document.getElementById('playPuzzleAgainBtn').addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        startBtn.click();
     });
 
     startBtn.addEventListener('click', startGame);
-    restartBtn.addEventListener('click', startGame);
 
     window.addEventListener('resize', resize);
     resize();
@@ -1370,7 +1401,6 @@ function initNeonPuzzle() {
     const canvas = document.getElementById('neonpuzzleCanvas');
     const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startPuzzleBtn');
-    const nextBtn = document.getElementById('nextPuzzleBtn');
     const levelEl = document.getElementById('puzzleLevel');
     const movesEl = document.getElementById('puzzleMoves');
     const overlay = document.getElementById('neonpuzzleOverlay');
@@ -1547,7 +1577,6 @@ function initNeonPuzzle() {
     });
 
     startBtn.addEventListener('click', startGame);
-    nextBtn.addEventListener('click', nextLevel);
 
     window.addEventListener('resize', resize);
     resize();
@@ -1558,7 +1587,6 @@ function initRhythmBeat() {
     const canvas = document.getElementById('rhythmCanvas');
     const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startRhythmBtn');
-    const restartBtn = document.getElementById('restartRhythmBtn');
     const scoreEl = document.getElementById('rhythmScore');
     const comboEl = document.getElementById('rhythmCombo');
     const streakEl = document.getElementById('rhythmStreak');
@@ -1743,19 +1771,18 @@ function initRhythmBeat() {
         }
     });
 
-    document.getElementById('generateRhythmPinBtn')?.addEventListener('click', () => {
-        generatePin('rhythmSecretCode', 'rhythmCodeHint');
+    document.getElementById('saveRhythmScoreBtn').addEventListener('click', () => {
+        submitScore('rhythm', score);
+        overlay.classList.add('hidden');
+        startBtn.style.display = 'block';
     });
 
-    document.getElementById('submitRhythmBtn').addEventListener('click', () => {
-        if (submitScore('rhythm', score, 'rhythmPlayerName', 'rhythmSecretCode', 'rhythmCodeHint')) {
-            overlay.classList.add('hidden');
-            startBtn.style.display = 'block';
-        }
+    document.getElementById('playRhythmAgainBtn').addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        startBtn.click();
     });
 
     startBtn.addEventListener('click', startGame);
-    restartBtn.addEventListener('click', startGame);
 
     window.addEventListener('resize', resize);
     resize();
@@ -1766,7 +1793,6 @@ function initCosmicArena() {
     const canvas = document.getElementById('arenaCanvas');
     const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startArenaBtn');
-    const restartBtn = document.getElementById('restartArenaBtn');
     const hpEl = document.getElementById('arenaHP');
     const killsEl = document.getElementById('arenaKills');
     const waveEl = document.getElementById('arenaWave');
@@ -2029,19 +2055,18 @@ function initCosmicArena() {
         });
     });
 
-    document.getElementById('generateArenaPinBtn')?.addEventListener('click', () => {
-        generatePin('arenaSecretCode', 'arenaCodeHint');
+    document.getElementById('saveArenaScoreBtn').addEventListener('click', () => {
+        submitScore('arena', kills);
+        overlay.classList.add('hidden');
+        startBtn.style.display = 'block';
     });
 
-    document.getElementById('submitArenaBtn').addEventListener('click', () => {
-        if (submitScore('arena', kills, 'arenaPlayerName', 'arenaSecretCode', 'arenaCodeHint')) {
-            overlay.classList.add('hidden');
-            startBtn.style.display = 'block';
-        }
+    document.getElementById('playArenaAgainBtn').addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        startBtn.click();
     });
 
     startBtn.addEventListener('click', startGame);
-    restartBtn.addEventListener('click', startGame);
 
     window.addEventListener('resize', resize);
     resize();
@@ -2052,7 +2077,6 @@ function initTetris() {
     const canvas = document.getElementById('tetrisCanvas');
     const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startTetrisBtn');
-    const restartBtn = document.getElementById('restartTetrisBtn');
     const scoreEl = document.getElementById('tetrisScore');
     const linesEl = document.getElementById('tetrisLines');
     const levelEl = document.getElementById('tetrisLevel');
@@ -2291,12 +2315,18 @@ function initTetris() {
         draw();
     });
 
-    document.getElementById('generateTetrisPinBtn')?.addEventListener('click', () => {
-        generatePin('tetrisSecretCode', 'tetrisCodeHint');
+    document.getElementById('saveTetrisScoreBtn').addEventListener('click', () => {
+        submitScore('tetris', score);
+        overlay.classList.add('hidden');
+        startBtn.style.display = 'block';
+    });
+
+    document.getElementById('playTetrisAgainBtn').addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        startBtn.click();
     });
 
     startBtn.addEventListener('click', startGame);
-    restartBtn.addEventListener('click', startGame);
 
     window.addEventListener('resize', resize);
     resize();
@@ -2307,7 +2337,6 @@ function initPlatformer() {
     const canvas = document.getElementById('platformerCanvas');
     const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startPlatformerBtn');
-    const restartBtn = document.getElementById('restartPlatformerBtn');
     const coinsEl = document.getElementById('coinsVal');
     const timeEl = document.getElementById('platformerTime');
     const overlay = document.getElementById('platformerOverlay');
@@ -2542,19 +2571,18 @@ function initPlatformer() {
     window.addEventListener('keydown', (e) => keys[e.code] = true);
     window.addEventListener('keyup', (e) => keys[e.code] = false);
 
-    document.getElementById('generatePlatformerPinBtn')?.addEventListener('click', () => {
-        generatePin('platformerSecretCode', 'platformerCodeHint');
+    document.getElementById('savePlatformerScoreBtn').addEventListener('click', () => {
+        submitScore('platformer', collected * 10 + Math.max(0, 100 - parseInt(formatTime(gameTime).replace(':', ''))));
+        overlay.classList.add('hidden');
+        startBtn.style.display = 'block';
     });
 
-    document.getElementById('submitPlatformerBtn').addEventListener('click', () => {
-        if (submitScore('platformer', collected * 10 + Math.max(0, 100 - parseInt(formatTime(gameTime).replace(':', ''))), 'platformerPlayerName', 'platformerSecretCode', 'platformerCodeHint')) {
-            overlay.classList.add('hidden');
-            startBtn.style.display = 'block';
-        }
+    document.getElementById('playPlatformerAgainBtn').addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        startBtn.click();
     });
 
     startBtn.addEventListener('click', startGame);
-    restartBtn.addEventListener('click', startGame);
 
     window.addEventListener('resize', resize);
     resize();

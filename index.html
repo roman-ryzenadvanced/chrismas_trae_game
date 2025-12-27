@@ -19,6 +19,7 @@
             <div class="logo">TRAE <span>AURORA</span></div>
             <ul class="nav-links">
                 <li><a href="#hero">Home</a></li>
+                <li><a href="#registration">Register</a></li>
                 <li><a href="#game">Gift Catcher</a></li>
                 <li><a href="#traoom">Traoom</a></li>
                 <li><a href="#neonpuzzle">Puzzle</a></li>
@@ -146,6 +147,25 @@
             </div>
         </section>
 
+        <!-- Registration Section -->
+        <section id="registration" class="glass-section">
+            <div class="section-card glass">
+                <h2>🎮 Player Registration</h2>
+                <p>Register once to save your scores across all games</p>
+                <div class="input-group" style="justify-content: center; max-width: 400px; margin: 0 auto;">
+                    <input type="text" id="regUsername" placeholder="Username" maxlength="15" style="flex: 1;">
+                    <button id="registerBtn" class="btn-primary">Register</button>
+                </div>
+                <p id="regStatus" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
+                <div id="currentUserInfo" class="user-info" style="display: none; text-align: center; margin-top: 15px;">
+                    <p>🎉 Your Name: <strong id="currentUserDisplay"></strong></p>
+                    <p style="font-size: 0.8rem; color: #888;">Your PIN: <strong id="currentUserPin"></strong></p>
+                    <p style="font-size: 0.7rem; color: #666; margin-top: 5px;">Use this Name + PIN for all games</p>
+                    <button onclick="logoutUser()" class="btn-secondary" style="margin-top: 10px; background: #ff4444;">Logout</button>
+                </div>
+            </div>
+        </section>
+
         <!-- Game Section -->
         <section id="game" class="game-section">
             <div class="section-card glass">
@@ -162,14 +182,14 @@
                         </div>
                         <div id="gameOverlay" class="game-overlay hidden">
                             <h3 id="overlayTitle">GAME OVER</h3>
-                            <div class="input-group">
-                                <input type="text" id="playerName" placeholder="Enter your name" maxlength="15">
-                                <input type="text" id="playerSecretCode" placeholder="Your PIN (optional)" maxlength="6" style="width: 120px; text-transform: uppercase;">
-                                <button id="generatePinBtn" class="btn-secondary" style="background: var(--trae-purple);">Generate PIN</button>
-                                <button id="submitScoreBtn" class="btn-primary">Save Score</button>
+                            <p id="finalScore">Final Score: <span id="gameFinalScore">0</span></p>
+                            <div id="saveScoreButtons" class="input-group">
+                                <button id="saveScoreBtn" class="btn-primary">Save Score</button>
+                                <button id="playAgainBtn" class="btn-secondary" style="background: var(--trae-green);">Play Again</button>
                             </div>
-                            <p class="code-hint" id="codeHint">New players get a PIN automatically</p>
-                            <p class="pin-explainer">Enter your name + PIN to save scores. The system uses your PIN to identify you. Save your PIN - it's unique to you!</p>
+                            <p id="loginPrompt" style="display: none; text-align: center; color: #ff6b6b;">
+                                <a href="#registration" style="color: var(--trae-cyan);">Register first</a> to save scores
+                            </p>
                         </div>
                         <button id="startGameBtn" class="btn-primary">Start Mission</button>
                     </div>
@@ -217,14 +237,12 @@
                             <p id="traoomOverlayScore">Bugs Fixed: <span id="finalKills">0</span></p>
                             <p id="traoomOverlayTime">Time Survived: <span id="finalTime">0:00</span></p>
                             <div class="input-group">
-                                <input type="text" id="traoomPlayerName" placeholder="Enter your name" maxlength="15">
-                                <input type="text" id="traoomSecretCode" placeholder="Your PIN (optional)" maxlength="6" style="width: 120px; text-transform: uppercase;">
-                                <button id="generateTraoomPinBtn" class="btn-secondary" style="background: var(--trae-purple);">Generate PIN</button>
-                                <button id="submitTraoomBtn" class="btn-primary">Save Score</button>
+                                <button id="saveTraoomScoreBtn" class="btn-primary">Save Score</button>
+                                <button id="playTraoomAgainBtn" class="btn-secondary" style="background: var(--trae-green);">Play Again</button>
                             </div>
-                            <p class="code-hint" id="traoomCodeHint">New players get a PIN</p>
-                            <p class="pin-explainer">Enter your name + PIN to save scores. The system uses your PIN to identify you. Save your PIN - it's unique to you!</p>
-                            <button id="restartTraoomBtn" class="btn-primary">Play Again</button>
+                            <p id="traoomLoginPrompt" style="display: none; text-align: center; color: #ff6b6b;">
+                                <a href="#registration" style="color: var(--trae-cyan);">Register first</a> to save scores
+                            </p>
                         </div>
                         <button id="startTraoomBtn" class="btn-primary">Start Bug Hunt</button>
                     </div>
@@ -251,14 +269,12 @@
                             <h3 id="puzzleOverlayTitle">LEVEL COMPLETE</h3>
                             <p id="puzzleOverlayScore">Moves: <span id="finalMoves">0</span></p>
                             <div class="input-group">
-                                <input type="text" id="puzzlePlayerName" placeholder="Enter your name" maxlength="15">
-                                <input type="text" id="puzzleSecretCode" placeholder="Your PIN (optional)" maxlength="6" style="width: 120px; text-transform: uppercase;">
-                                <button id="generatePuzzlePinBtn" class="btn-secondary" style="background: var(--trae-purple);">Generate PIN</button>
-                                <button id="submitPuzzleBtn" class="btn-primary">Save Score</button>
+                                <button id="savePuzzleScoreBtn" class="btn-primary">Save Score</button>
+                                <button id="playPuzzleAgainBtn" class="btn-secondary" style="background: var(--trae-green);">Play Again</button>
                             </div>
-                            <p class="code-hint" id="puzzleCodeHint">New players get a PIN</p>
-                            <p class="pin-explainer">Enter your name + PIN to save scores. The system uses your PIN to identify you. Save your PIN - it's unique to you!</p>
-                            <button id="restartPuzzleBtn" class="btn-primary">Play Again</button>
+                            <p id="puzzleLoginPrompt" style="display: none; text-align: center; color: #ff6b6b;">
+                                <a href="#registration" style="color: var(--trae-cyan);">Register first</a> to save scores
+                            </p>
                         </div>
                         <button id="startPuzzleBtn" class="btn-primary">Start Puzzle</button>
                     </div>
@@ -286,14 +302,12 @@
                             <h3 id="rhythmOverlayTitle">BEAT OVER</h3>
                             <p id="rhythmOverlayScore">Final Score: <span id="finalRhythmScore">0</span></p>
                             <div class="input-group">
-                                <input type="text" id="rhythmPlayerName" placeholder="Enter your name" maxlength="15">
-                                <input type="text" id="rhythmSecretCode" placeholder="Your PIN (optional)" maxlength="6" style="width: 120px; text-transform: uppercase;">
-                                <button id="generateRhythmPinBtn" class="btn-secondary" style="background: var(--trae-purple);">Generate PIN</button>
-                                <button id="submitRhythmBtn" class="btn-primary">Save Score</button>
+                                <button id="saveRhythmScoreBtn" class="btn-primary">Save Score</button>
+                                <button id="playRhythmAgainBtn" class="btn-secondary" style="background: var(--trae-green);">Play Again</button>
                             </div>
-                            <p class="code-hint" id="rhythmCodeHint">New players get a PIN</p>
-                            <p class="pin-explainer">Enter your name + PIN to save scores. The system uses your PIN to identify you. Save your PIN - it's unique to you!</p>
-                            <button id="restartRhythmBtn" class="btn-primary">Play Again</button>
+                            <p id="rhythmLoginPrompt" style="display: none; text-align: center; color: #ff6b6b;">
+                                <a href="#registration" style="color: var(--trae-cyan);">Register first</a> to save scores
+                            </p>
                         </div>
                         <button id="startRhythmBtn" class="btn-primary">Start Rhythm</button>
                     </div>
@@ -321,14 +335,12 @@
                             <h3 id="arenaOverlayTitle">GAME OVER</h3>
                             <p id="arenaOverlayScore">Enemies Defeated: <span id="finalArenaKills">0</span></p>
                             <div class="input-group">
-                                <input type="text" id="arenaPlayerName" placeholder="Enter your name" maxlength="15">
-                                <input type="text" id="arenaSecretCode" placeholder="Your PIN (optional)" maxlength="6" style="width: 120px; text-transform: uppercase;">
-                                <button id="generateArenaPinBtn" class="btn-secondary" style="background: var(--trae-purple);">Generate PIN</button>
-                                <button id="submitArenaBtn" class="btn-primary">Save Score</button>
+                                <button id="saveArenaScoreBtn" class="btn-primary">Save Score</button>
+                                <button id="playArenaAgainBtn" class="btn-secondary" style="background: var(--trae-green);">Play Again</button>
                             </div>
-                            <p class="code-hint" id="arenaCodeHint">New players get a PIN</p>
-                            <p class="pin-explainer">Enter your name + PIN to save scores. The system uses your PIN to identify you. Save your PIN - it's unique to you!</p>
-                            <button id="restartArenaBtn" class="btn-primary">Play Again</button>
+                            <p id="arenaLoginPrompt" style="display: none; text-align: center; color: #ff6b6b;">
+                                <a href="#registration" style="color: var(--trae-cyan);">Register first</a> to save scores
+                            </p>
                         </div>
                         <button id="startArenaBtn" class="btn-primary">Enter Arena</button>
                     </div>
@@ -356,14 +368,12 @@
                             <h3 id="tetrisOverlayTitle">GAME OVER</h3>
                             <p id="tetrisOverlayScore">Final Score: <span id="finalTetrisScore">0</span></p>
                             <div class="input-group">
-                                <input type="text" id="tetrisPlayerName" placeholder="Enter your name" maxlength="15">
-                                <input type="text" id="tetrisSecretCode" placeholder="Your PIN (optional)" maxlength="6" style="width: 120px; text-transform: uppercase;">
-                                <button id="generateTetrisPinBtn" class="btn-secondary" style="background: var(--trae-purple);">Generate PIN</button>
-                                <button id="submitTetrisBtn" class="btn-primary">Save Score</button>
+                                <button id="saveTetrisScoreBtn" class="btn-primary">Save Score</button>
+                                <button id="playTetrisAgainBtn" class="btn-secondary" style="background: var(--trae-green);">Play Again</button>
                             </div>
-                            <p class="code-hint" id="tetrisCodeHint">New players get a PIN</p>
-                            <p class="pin-explainer">Enter your name + PIN to save scores. The system uses your PIN to identify you. Save your PIN - it's unique to you!</p>
-                            <button id="restartTetrisBtn" class="btn-primary">Play Again</button>
+                            <p id="tetrisLoginPrompt" style="display: none; text-align: center; color: #ff6b6b;">
+                                <a href="#registration" style="color: var(--trae-cyan);">Register first</a> to save scores
+                            </p>
                         </div>
                         <button id="startTetrisBtn" class="btn-primary">Start Game</button>
                     </div>
@@ -391,14 +401,12 @@
                             <p id="platformerOverlayScore">Coins: <span id="finalCoins">0</span></p>
                             <p id="platformerOverlayTime">Time: <span id="finalPlatformerTime">0:00</span></p>
                             <div class="input-group">
-                                <input type="text" id="platformerPlayerName" placeholder="Enter your name" maxlength="15">
-                                <input type="text" id="platformerSecretCode" placeholder="Your PIN (optional)" maxlength="6" style="width: 120px; text-transform: uppercase;">
-                                <button id="generatePlatformerPinBtn" class="btn-secondary" style="background: var(--trae-purple);">Generate PIN</button>
-                                <button id="submitPlatformerBtn" class="btn-primary">Save Score</button>
+                                <button id="savePlatformerScoreBtn" class="btn-primary">Save Score</button>
+                                <button id="playPlatformerAgainBtn" class="btn-secondary" style="background: var(--trae-green);">Play Again</button>
                             </div>
-                            <p class="code-hint" id="platformerCodeHint">New players get a PIN</p>
-                            <p class="pin-explainer">Enter your name + PIN to save scores. The system uses your PIN to identify you. Save your PIN - it's unique to you!</p>
-                            <button id="restartPlatformerBtn" class="btn-primary">Play Again</button>
+                            <p id="platformerLoginPrompt" style="display: none; text-align: center; color: #ff6b6b;">
+                                <a href="#registration" style="color: var(--trae-cyan);">Register first</a> to save scores
+                            </p>
                         </div>
                         <button id="startPlatformerBtn" class="btn-primary">Start Game</button>
                     </div>
